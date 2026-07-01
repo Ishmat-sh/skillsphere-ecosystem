@@ -1,56 +1,68 @@
 const User = require('../models/User');
+const Client = require('../models/Client');
+const Freelancer = require('../models/Freelancer');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-// Register User
+const createProfile = async (user) => {
+  if (user.role === 'Client') {
+    await Client.findOneAndUpdate({ user: user._id }, { user: user._id }, { upsert: true });
+  } else if (user.role === 'Freelancer') {
+    await Freelancer.findOneAndUpdate({ user: user._id }, { user: user._id }, { upsert: true });
+  }
+};
+
 exports.register = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
-    // Check if user already exists
     let user = await User.findOne({ email });
     if (user) return res.status(400).json({ message: 'User already exists' });
 
-    // Hash the password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create new user
-    user = new User({
-      name,
-      email,
-      password: hashedPassword,
-      role
-    });
-
+    user = new User({ name, email, password: hashedPassword, role });
     await user.save();
+    await createProfile(user);
 
-    // Generate JWT
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
-    res.status(201).json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role } });
+    res.status(201).json({
+      token,
+      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-// Login User
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Check user existence
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: 'Invalid credentials' });
 
-    // Validate password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
-    // Generate JWT
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
-    res.json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role } });
+    res.json({
+      token,
+      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password');
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.json({ id: user._id, name: user.name, email: user.email, role: user.role });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
