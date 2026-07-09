@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import api from '../../services/api';
 import { glassCard, statusBadge, btnPrimary, btnGhost, inputClass } from '../../styles/dashboardStyles';
 
-export default function GigFeed({ onSelectGig, searchQuery = '' }) {
+export default function GigFeed({ onSelectGig, searchQuery = '', socketHook }) {
   const [gigs, setGigs] = useState([]);
   const [selected, setSelected] = useState(null);
   const [proposal, setProposal] = useState({ quote: '', deliveryTimeline: '', coverLetter: '' });
@@ -14,6 +14,14 @@ export default function GigFeed({ onSelectGig, searchQuery = '' }) {
   };
 
   useEffect(() => { load(); }, [searchQuery]);
+
+  useEffect(() => {
+    if (!socketHook) return;
+    const cleanup = socketHook.onGigNew?.((gig) => {
+      load();
+    });
+    return cleanup;
+  }, [socketHook]);
 
   const submitProposal = async (gigId) => {
     try {

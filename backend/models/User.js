@@ -6,11 +6,15 @@ const UserSchema = new mongoose.Schema({
   password: { type: String, required: true },
   role: { 
     type: String, 
-    enum: ['Client', 'Freelancer', 'Admin'], // [cite: 11, 12, 13, 14]
+    enum: ['Client', 'Freelancer', 'Admin'],
     required: true 
   },
-  isVerified: { type: Boolean, default: false }, // [cite: 19]
-  twoFactorEnabled: { type: Boolean, default: false }, // [cite: 21]
+  avatar: { type: String },
+  isVerified: { type: Boolean, default: false },
+  twoFactorEnabled: { type: Boolean, default: false },
+  isSuspended: { type: Boolean, default: false },
+  suspensionReason: { type: String },
+  suspendedAt: { type: Date },
   createdAt: { type: Date, default: Date.now }
 });
 

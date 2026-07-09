@@ -67,3 +67,28 @@ exports.getMe = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+exports.updateProfile = async (req, res) => {
+  try {
+    const { name, email, avatar } = req.body;
+    
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    
+    if (name) user.name = name;
+    if (email) user.email = email;
+    if (avatar) user.avatar = avatar;
+    
+    await user.save();
+    
+    res.json({ 
+      id: user._id, 
+      name: user.name, 
+      email: user.email, 
+      role: user.role,
+      avatar: user.avatar 
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

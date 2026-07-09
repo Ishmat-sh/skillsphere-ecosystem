@@ -78,7 +78,7 @@ export default function Dashboard() {
                   onChange={(e) => setGigSearch(e.target.value)}
                 />
               </div>
-              <GigFeed searchQuery={gigSearch} />
+              <GigFeed searchQuery={gigSearch} socketHook={socketHook} />
             </>
           )}
 

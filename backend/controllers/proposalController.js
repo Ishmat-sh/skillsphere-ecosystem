@@ -2,6 +2,7 @@ const Proposal = require('../models/Proposal');
 const Gig = require('../models/Gig');
 const Escrow = require('../models/Escrow');
 const Activity = require('../models/Activity');
+const { createNotification } = require('./notificationController');
 
 const emitStatus = (req, event, payload) => {
   const io = req.app.get('io');
@@ -41,6 +42,16 @@ exports.submitProposal = async (req, res) => {
       freelancerId: req.user.id,
       proposal: populated,
     });
+
+    // Create notification for client
+    await createNotification(
+      gig.client.toString(),
+      'new_gig',
+      'New Proposal Received',
+      `${populated.freelancer.name} has submitted a proposal for "${populated.gig.title}"`,
+      proposal._id,
+      'proposal'
+    );
 
     res.status(201).json(populated);
   } catch (err) {
@@ -110,6 +121,22 @@ exports.updateProposalStatus = async (req, res) => {
       freelancerId: proposal.freelancer.toString(),
       proposal: populated,
     });
+
+    // Create notification for freelancer
+    const notificationType = status === 'Accepted' ? 'proposal_accepted' : 'proposal_rejected';
+    const notificationTitle = status === 'Accepted' ? 'Proposal Accepted!' : 'Proposal Rejected';
+    const notificationMessage = status === 'Accepted' 
+      ? `Your proposal for "${gig.title}" has been accepted!`
+      : `Your proposal for "${gig.title}" has been rejected.`;
+    
+    await createNotification(
+      proposal.freelancer.toString(),
+      notificationType,
+      notificationTitle,
+      notificationMessage,
+      proposal._id,
+      'proposal'
+    );
 
     res.json(populated);
   } catch (err) {

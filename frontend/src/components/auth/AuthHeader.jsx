@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom';
-import logo from '../../assets/skillsphere-logo.png';
+import Logo from '../Logo';
 
 export default function AuthHeader({ alternateLink, alternateLabel }) {
   return (
     <header className="shrink-0 bg-black px-6 sm:px-8 py-3 sm:py-3.5 flex items-center justify-between">
-      <img src={logo} alt="SkillSphere" className="h-7 sm:h-8 w-auto object-contain" />
+      <Logo size="sm" />
 
       <Link
         to={alternateLink}

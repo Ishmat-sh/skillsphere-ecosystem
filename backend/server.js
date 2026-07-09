@@ -27,6 +27,12 @@ app.use('/api/proposals', require('./routes/proposalRoutes'));
 app.use('/api/escrow', require('./routes/escrowRoutes'));
 app.use('/api/chat', require('./routes/chatRoutes'));
 app.use('/api/analytics', require('./routes/analyticsRoutes'));
+app.use('/api/reviews', require('./routes/reviewRoutes'));
+app.use('/api/payments', require('./routes/paymentRoutes'));
+app.use('/api/upload', require('./routes/uploadRoutes'));
+app.use('/api/freelancer', require('./routes/freelancerRoutes'));
+app.use('/api/admin', require('./routes/adminRoutes'));
+app.use('/api/notifications', require('./routes/notificationRoutes'));
 
 app.get('/', (req, res) => {
   res.send('SkillSphere Backend API running...');

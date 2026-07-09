@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from '../assets/skillsphere-logo.png';
+import Logo from '../components/Logo';
 import MouseTrackingMesh from '../components/auth/MouseTrackingMesh';
 import ParticleCanvas from '../components/auth/ParticleCanvas';
 import CliTerminal from '../components/landing/CliTerminal';
@@ -15,7 +15,7 @@ export default function Landing() {
       <ParticleCanvas />
 
       <div className="relative z-10 text-center px-6 max-w-2xl">
-        <img src={logo} alt="SkillSphere" className="h-12 mx-auto mb-6" />
+        <Logo size="lg" className="mx-auto mb-6 w-fit" />
         <p className="text-[#A2A2D0]/60 text-xs uppercase tracking-[0.2em] mb-3">
           Intelligent Hyperlocal Freelance Ecosystem
         </p>

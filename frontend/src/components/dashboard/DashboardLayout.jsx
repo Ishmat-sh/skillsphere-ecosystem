@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import logo from '../../assets/skillsphere-logo.png';
+import Logo from '../Logo';
 import LiveTicker from './LiveTicker';
 
 export default function DashboardLayout({ children }) {
@@ -15,7 +15,7 @@ export default function DashboardLayout({ children }) {
 
       <header className="relative z-10 bg-black/80 backdrop-blur-md border-b border-white/5 px-6 py-3 flex items-center justify-between">
         <Link to="/dashboard" className="flex items-center gap-2">
-          <img src={logo} alt="SkillSphere" className="h-7" />
+          <Logo size="sm" />
         </Link>
         <div className="flex items-center gap-4">
           <span className="text-sm text-[#A2A2D0]/70 hidden sm:block">

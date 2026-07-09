@@ -28,6 +28,10 @@ export default function useSocket(onProposalUpdate, onContractUpdate) {
     socketRef.current?.on('chat:message', cb);
     return () => socketRef.current?.off('chat:message', cb);
   };
+  const onGigNew = (cb) => {
+    socketRef.current?.on('gig:new', cb);
+    return () => socketRef.current?.off('gig:new', cb);
+  };
 
-  return { joinChat, sendMessage, onMessage, socket: socketRef };
+  return { joinChat, sendMessage, onMessage, onGigNew, socket: socketRef };
 }
