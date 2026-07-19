@@ -282,3 +282,37 @@ exports.updateFreelancerProfile = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+exports.getAvailability = async (req, res) => {
+  try {
+    const freelancer = await Freelancer.findOne({ user: req.user.id });
+    if (!freelancer) return res.status(404).json({ message: 'Freelancer profile not found' });
+    res.json(freelancer.availability || []);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+exports.updateAvailability = async (req, res) => {
+  try {
+    const { availability } = req.body;
+    const freelancer = await Freelancer.findOneAndUpdate(
+      { user: req.user.id },
+      { $set: { availability } },
+      { new: true, upsert: true }
+    );
+    res.json(freelancer.availability);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+exports.getFreelancerAvailabilityById = async (req, res) => {
+  try {
+    const freelancer = await Freelancer.findOne({ user: req.params.id });
+    if (!freelancer) return res.status(404).json({ message: 'Freelancer profile not found' });
+    res.json(freelancer.availability || []);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

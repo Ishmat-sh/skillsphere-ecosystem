@@ -205,3 +205,33 @@ exports.hireAndLockEscrow = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+exports.generateAICoverLetter = async (req, res) => {
+  try {
+    const { gigId } = req.body;
+    const gig = await Gig.findById(gigId);
+    if (!gig) return res.status(404).json({ message: 'Gig not found' });
+
+    const Freelancer = require('../models/Freelancer');
+    const huggingfaceService = require('../services/huggingfaceService');
+
+    const freelancer = await Freelancer.findOne({ user: req.user.id });
+    const userSkills = freelancer?.skills?.map((s) => s.name) || [];
+
+    let text;
+    try {
+      text = await huggingfaceService.generateProposalText(
+        gig.title,
+        gig.description,
+        userSkills.length > 0 ? userSkills : ['Software Development']
+      );
+    } catch (e) {
+      const skillString = userSkills.length > 0 ? userSkills.join(', ') : 'software engineering';
+      text = `Dear Client,\n\nI am writing to express my strong interest in your project "${gig.title}". With my experience in ${skillString}, I am confident that I can deliver outstanding results. I have read the project description: "${gig.description}" and believe my skillset perfectly matches your requirements.\n\nLooking forward to collaborating with you!\n\nBest regards,\n${req.user.name || 'Professional Freelancer'}`;
+    }
+
+    res.json({ coverLetter: text });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

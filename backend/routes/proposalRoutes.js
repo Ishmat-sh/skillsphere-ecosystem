@@ -8,5 +8,6 @@ router.get('/mine', auth(['Freelancer']), proposalController.getMyProposals);
 router.get('/gig/:gigId', auth(['Client']), proposalController.getProposalsForGig);
 router.patch('/:id/status', auth(['Client']), proposalController.updateProposalStatus);
 router.post('/:id/hire', auth(['Client']), proposalController.hireAndLockEscrow);
+router.post('/generate-cover-letter', auth(['Freelancer']), proposalController.generateAICoverLetter);
 
 module.exports = router;

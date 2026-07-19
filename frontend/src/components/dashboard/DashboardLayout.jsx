@@ -7,13 +7,13 @@ export default function DashboardLayout({ children }) {
   const { user, logout } = useAuth();
 
   return (
-    <div className="min-h-dvh bg-[#0f0f12] text-white overflow-auto">
+    <div className="min-h-screen bg-[#0f0f12] text-white flex flex-col">
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#FF00FF]/8 rounded-full blur-[120px]" />
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#00D2FF]/8 rounded-full blur-[120px]" />
       </div>
 
-      <header className="relative z-10 bg-black/80 backdrop-blur-md border-b border-white/5 px-6 py-3 flex items-center justify-between">
+      <header className="relative z-10 bg-black/80 backdrop-blur-md border-b border-white/5 px-6 py-3 flex items-center justify-between flex-shrink-0">
         <Link to="/dashboard" className="flex items-center gap-2">
           <Logo size="sm" />
         </Link>
@@ -27,7 +27,7 @@ export default function DashboardLayout({ children }) {
         </div>
       </header>
 
-      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-6">
+      <main className="relative z-10 flex-1 overflow-y-auto max-w-7xl mx-auto px-4 sm:px-6 py-6">
         <LiveTicker />
         {children}
       </main>

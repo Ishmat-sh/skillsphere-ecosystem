@@ -29,4 +29,9 @@ router.patch('/pricing', auth(['Freelancer']), freelancerController.updatePricin
 router.get('/profile', auth(['Freelancer']), freelancerController.getFreelancerProfile);
 router.patch('/profile', auth(['Freelancer']), freelancerController.updateFreelancerProfile);
 
+// Availability management
+router.get('/availability', auth(['Freelancer']), freelancerController.getAvailability);
+router.patch('/availability', auth(['Freelancer']), freelancerController.updateAvailability);
+router.get('/availability/user/:id', auth(), freelancerController.getFreelancerAvailabilityById);
+
 module.exports = router;

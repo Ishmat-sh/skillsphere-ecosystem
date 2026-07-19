@@ -12,6 +12,8 @@ import FreelancerAnalytics from '../components/analytics/FreelancerAnalytics';
 import ClientAnalytics from '../components/analytics/ClientAnalytics';
 import ChatPanel from '../components/chat/ChatPanel';
 import { btnPrimary } from '../styles/dashboardStyles';
+import AdminDashboard from '../components/dashboard/AdminDashboard';
+import AvailabilityScheduler from '../components/dashboard/AvailabilityScheduler';
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -40,6 +42,7 @@ export default function Dashboard() {
   const socketHook = useSocket(onProposalUpdate, onContractUpdate);
 
   useEffect(() => {
+    if (user?.role === 'Admin') return; // Admin has its own stats loader
     loadEscrows();
     const endpoint = user?.role === 'Client' ? '/api/analytics/client' : '/api/analytics/freelancer';
     api.get(endpoint).then((res) => setAnalytics(res.data)).catch(() => {});
@@ -51,58 +54,65 @@ export default function Dashboard() {
   };
 
   const isClient = user?.role === 'Client';
+  const role = user?.role;
 
   return (
     <DashboardLayout>
-      <div className="grid lg:grid-cols-2 gap-6">
-        <div className="space-y-6">
-          {isClient ? (
-            <>
-              <PostGigForm onCreated={() => setRefreshKey((k) => k + 1)} />
-              <ClientProposals
-                refreshKey={refreshKey}
-                onHired={(escrow) => {
-                  setNewEscrow(escrow);
-                  loadEscrows();
-                  setTimeout(() => setNewEscrow(null), 3000);
-                }}
-              />
-            </>
-          ) : (
-            <>
-              <div className="flex gap-2">
-                <input
-                  className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-white text-sm placeholder-[#A2A2D0]/40"
-                  placeholder="Search gigs (e.g. javascript)"
-                  value={gigSearch}
-                  onChange={(e) => setGigSearch(e.target.value)}
+      {role === 'Admin' ? (
+        <AdminDashboard />
+      ) : (
+        <div className="grid lg:grid-cols-2 gap-6">
+          <div className="space-y-6">
+            {isClient ? (
+              <>
+                <PostGigForm onCreated={() => setRefreshKey((k) => k + 1)} />
+                <ClientProposals
+                  refreshKey={refreshKey}
+                  onHired={(escrow) => {
+                    setNewEscrow(escrow);
+                    loadEscrows();
+                    setTimeout(() => setNewEscrow(null), 3000);
+                  }}
+                />
+              </>
+            ) : (
+              <>
+                <div className="flex gap-2">
+                  <input
+                    className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-white text-sm placeholder-[#A2A2D0]/40"
+                    placeholder="Search gigs (e.g. javascript)"
+                    value={gigSearch}
+                    onChange={(e) => setGigSearch(e.target.value)}
+                  />
+                </div>
+                <GigFeed searchQuery={gigSearch} socketHook={socketHook} />
+              </>
+            )}
+          </div>
+
+          <div className="space-y-6">
+            {isClient ? (
+              <ClientAnalytics data={analytics} />
+            ) : (
+              <>
+                <FreelancerAnalytics data={analytics} />
+                <AvailabilityScheduler />
+              </>
+            )}
+            <ChatPanel socketHook={socketHook} />
+
+            {escrows.map((escrow) => (
+              <div key={escrow._id}>
+                <TimelineLock 
+                  escrow={escrow} 
+                  animate={newEscrow?._id === escrow._id} 
+                  onCompleteMilestone={completeMilestone}
                 />
               </div>
-              <GigFeed searchQuery={gigSearch} socketHook={socketHook} />
-            </>
-          )}
-
-          {escrows.map((escrow) => (
-            <div key={escrow._id}>
-              <TimelineLock escrow={escrow} animate={newEscrow?._id === escrow._id} />
-              <div className="mt-2 flex flex-wrap gap-2">
-                {escrow.milestones?.map((m, i) =>
-                  m.status === 'pending' ? (
-                    <button key={i} className={btnPrimary} onClick={() => completeMilestone(escrow._id, i)}>
-                      Complete: {m.title}
-                    </button>
-                  ) : null
-                )}
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-
-        <div className="space-y-6">
-          {isClient ? <ClientAnalytics data={analytics} /> : <FreelancerAnalytics data={analytics} />}
-          <ChatPanel socketHook={socketHook} />
-        </div>
-      </div>
+      )}
     </DashboardLayout>
   );
 }

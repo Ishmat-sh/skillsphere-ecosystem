@@ -22,7 +22,11 @@ const FreelancerSchema = new mongoose.Schema({
     coordinates: { type: [Number], index: '2dsphere' } // Critical for Localized/Hyperlocal search! [cite: 32, 105]
   },
   reputationScore: { type: Number, default: 0 }, // [cite: 84]
-  isVerifiedBadge: { type: Boolean, default: false } // [cite: 42, 94]
+  isVerifiedBadge: { type: Boolean, default: false }, // [cite: 42, 94]
+  availability: [{
+    day: { type: String, enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] },
+    slots: [{ type: String }]
+  }]
 });
 
 module.exports = mongoose.model('Freelancer', FreelancerSchema);

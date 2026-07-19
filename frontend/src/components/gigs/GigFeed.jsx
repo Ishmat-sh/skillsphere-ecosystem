@@ -7,10 +7,13 @@ export default function GigFeed({ onSelectGig, searchQuery = '', socketHook }) {
   const [selected, setSelected] = useState(null);
   const [proposal, setProposal] = useState({ quote: '', deliveryTimeline: '', coverLetter: '' });
   const [msg, setMsg] = useState('');
+  const [generatingAI, setGeneratingAI] = useState(false);
 
   const load = () => {
     const params = searchQuery ? { search: searchQuery } : {};
-    api.get('/api/gigs', { params }).then((res) => setGigs(res.data)).catch(() => {});
+    api.get('/api/gigs', { params }).then((res) => {
+      setGigs(res.data.gigs || res.data || []);
+    }).catch(() => {});
   };
 
   useEffect(() => { load(); }, [searchQuery]);
@@ -22,6 +25,20 @@ export default function GigFeed({ onSelectGig, searchQuery = '', socketHook }) {
     });
     return cleanup;
   }, [socketHook]);
+
+  const generateAICoverLetter = async (gigId) => {
+    setGeneratingAI(true);
+    setMsg('');
+    try {
+      const res = await api.post('/api/proposals/generate-cover-letter', { gigId });
+      setProposal((prev) => ({ ...prev, coverLetter: res.data.coverLetter }));
+      setMsg('AI Cover Letter generated successfully!');
+    } catch (err) {
+      setMsg(err.response?.data?.message || 'Failed to generate AI cover letter');
+    } finally {
+      setGeneratingAI(false);
+    }
+  };
 
   const submitProposal = async (gigId) => {
     try {
@@ -53,10 +70,23 @@ export default function GigFeed({ onSelectGig, searchQuery = '', socketHook }) {
               </button>
             </div>
             {selected === gig._id && (
-              <div className="mt-3 pt-3 border-t border-white/10 space-y-2">
+              <div className="mt-3 pt-3 border-t border-white/10 space-y-3">
                 <input className={inputClass} type="number" placeholder="Your quote ($)" value={proposal.quote} onChange={(e) => setProposal({ ...proposal, quote: e.target.value })} />
                 <input className={inputClass} placeholder="Delivery timeline (e.g. 2 weeks)" value={proposal.deliveryTimeline} onChange={(e) => setProposal({ ...proposal, deliveryTimeline: e.target.value })} />
-                <textarea className={`${inputClass} min-h-[60px]`} placeholder="Cover letter" value={proposal.coverLetter} onChange={(e) => setProposal({ ...proposal, coverLetter: e.target.value })} />
+                <div>
+                  <div className="flex justify-between items-center mb-1.5">
+                    <span className="text-xs text-[#A2A2D0]/60">Cover letter</span>
+                    <button
+                      type="button"
+                      onClick={() => generateAICoverLetter(gig._id)}
+                      disabled={generatingAI}
+                      className="text-xs text-[#00D2FF] hover:underline flex items-center gap-1 disabled:opacity-50"
+                    >
+                      {generatingAI ? 'Generating...' : '✨ Generate with AI'}
+                    </button>
+                  </div>
+                  <textarea className={`${inputClass} min-h-[80px]`} placeholder="Write or generate cover letter..." value={proposal.coverLetter} onChange={(e) => setProposal({ ...proposal, coverLetter: e.target.value })} />
+                </div>
                 <button className={`${btnPrimary} w-full`} onClick={() => submitProposal(gig._id)}>Submit Proposal</button>
               </div>
             )}
