@@ -89,7 +89,7 @@ exports.deleteNotification = async (req, res) => {
 };
 
 // Helper function to create notifications (can be used by other controllers)
-exports.createNotification = async (recipientId, type, title, message, relatedId = null, relatedType = null) => {
+exports.createNotification = async (recipientId, type, title, message, relatedId = null, relatedType = null, io = null) => {
   try {
     const notification = await Notification.create({
       recipient: recipientId,
@@ -101,7 +101,10 @@ exports.createNotification = async (recipientId, type, title, message, relatedId
     });
 
     // Emit via Socket.IO if available
-    // This would require passing the io instance
+    if (io) {
+      io.to(`user:${recipientId}`).emit('notification:new', notification);
+    }
+
     return notification;
   } catch (err) {
     console.error('Error creating notification:', err);

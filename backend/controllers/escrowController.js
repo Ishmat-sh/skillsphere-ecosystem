@@ -34,10 +34,10 @@ exports.completeMilestone = async (req, res) => {
     const escrow = await Escrow.findById(escrowId).populate('gig');
     if (!escrow) return res.status(404).json({ message: 'Escrow not found' });
 
+    // Only clients can complete milestones
     const isClient = escrow.client.toString() === req.user.id;
-    const isFreelancer = escrow.freelancer.toString() === req.user.id;
-    if (!isClient && !isFreelancer) {
-      return res.status(403).json({ message: 'Forbidden' });
+    if (!isClient) {
+      return res.status(403).json({ message: 'Only clients can complete milestones' });
     }
 
     const idx = parseInt(milestoneIndex, 10);
@@ -54,12 +54,10 @@ exports.completeMilestone = async (req, res) => {
     escrow.status = allDone ? 'released' : 'partial';
     await escrow.save();
 
-    if (req.user.role === 'Client') {
-      await Client.findOneAndUpdate(
-        { user: req.user.id },
-        { $inc: { spentTotal: milestone.amount } }
-      );
-    }
+    await Client.findOneAndUpdate(
+      { user: req.user.id },
+      { $inc: { spentTotal: milestone.amount } }
+    );
 
     await Activity.create({
       message: `Milestone "${milestone.title}" cleared — $${milestone.amount}`,

@@ -6,7 +6,7 @@ const GigSchema = new mongoose.Schema({
   budget: { type: Number, required: true },
   category: { type: String, required: true },
   skills: [{ type: String }],
-  status: { type: String, enum: ['active', 'closed', 'filled'], default: 'active' },
+  status: { type: String, enum: ['draft', 'active', 'closed', 'filled', 'cancelled'], default: 'active' },
   client: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   deadline: { type: Date },
   createdAt: { type: Date, default: Date.now },

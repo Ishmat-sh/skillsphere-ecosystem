@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
 
 const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
+  password: { type: String, required: false }, // Made optional for OAuth users
+  googleId: { type: String },
   role: { 
     type: String, 
     enum: ['Client', 'Freelancer', 'Admin'],
@@ -17,5 +19,13 @@ const UserSchema = new mongoose.Schema({
   suspendedAt: { type: Date },
   createdAt: { type: Date, default: Date.now }
 });
+
+UserSchema.methods.generateAuthToken = function() {
+  return jwt.sign(
+    { id: this._id, role: this.role },
+    process.env.JWT_SECRET,
+    { expiresIn: '1d' }
+  );
+};
 
 module.exports = mongoose.model('User', UserSchema);

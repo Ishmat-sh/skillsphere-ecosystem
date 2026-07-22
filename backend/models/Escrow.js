@@ -15,7 +15,7 @@ const EscrowSchema = new mongoose.Schema({
   totalAmount: { type: Number, required: true },
   lockedAmount: { type: Number, required: true },
   releasedAmount: { type: Number, default: 0 },
-  status: { type: String, enum: ['locked', 'partial', 'released'], default: 'locked' },
+  status: { type: String, enum: ['locked', 'partial', 'released', 'funded', 'completed', 'refunded'], default: 'locked' },
   milestones: [MilestoneSchema],
   createdAt: { type: Date, default: Date.now },
 });

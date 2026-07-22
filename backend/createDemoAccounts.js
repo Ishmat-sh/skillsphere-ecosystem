@@ -13,8 +13,9 @@ const createDemoAccounts = async () => {
     // Check if demo accounts already exist
     const existingClient = await User.findOne({ email: 'client@demo.com' });
     const existingFreelancer = await User.findOne({ email: 'freelancer@demo.com' });
+    const existingAdmin = await User.findOne({ email: 'admin@skillsphere.com' });
     
-    if (existingClient || existingFreelancer) {
+    if (existingClient || existingFreelancer || existingAdmin) {
       console.log('Demo accounts already exist. Updating passwords...');
       
       if (existingClient) {
@@ -29,6 +30,13 @@ const createDemoAccounts = async () => {
         existingFreelancer.password = freelancerPassword;
         await existingFreelancer.save();
         console.log('Freelancer password updated');
+      }
+      
+      if (existingAdmin) {
+        const adminPassword = await bcrypt.hash('Admin@123', await bcrypt.genSalt(10));
+        existingAdmin.password = adminPassword;
+        await existingAdmin.save();
+        console.log('Admin password updated');
       }
     } else {
       // Create demo client
@@ -54,6 +62,17 @@ const createDemoAccounts = async () => {
       });
       await Freelancer.findOneAndUpdate({ user: freelancer._id }, { user: freelancer._id }, { upsert: true });
       console.log('Freelancer account created');
+      
+      // Create demo admin
+      const adminPassword = await bcrypt.hash('Admin@123', await bcrypt.genSalt(10));
+      const admin = await User.create({
+        name: 'Admin User',
+        email: 'admin@skillsphere.com',
+        password: adminPassword,
+        role: 'Admin',
+        isVerified: true
+      });
+      console.log('Admin account created');
     }
     
     console.log('\n=== DEMO ACCOUNTS ===');

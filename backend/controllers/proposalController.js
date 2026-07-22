@@ -43,14 +43,16 @@ exports.submitProposal = async (req, res) => {
       proposal: populated,
     });
 
-    // Create notification for client
+    // Create notification for client with Socket.IO
+    const io = req.app.get('io');
     await createNotification(
       gig.client.toString(),
       'new_gig',
       'New Proposal Received',
       `${populated.freelancer.name} has submitted a proposal for "${populated.gig.title}"`,
       proposal._id,
-      'proposal'
+      'proposal',
+      io
     );
 
     res.status(201).json(populated);
@@ -122,7 +124,8 @@ exports.updateProposalStatus = async (req, res) => {
       proposal: populated,
     });
 
-    // Create notification for freelancer
+    // Create notification for freelancer with Socket.IO
+    const io = req.app.get('io');
     const notificationType = status === 'Accepted' ? 'proposal_accepted' : 'proposal_rejected';
     const notificationTitle = status === 'Accepted' ? 'Proposal Accepted!' : 'Proposal Rejected';
     const notificationMessage = status === 'Accepted' 
@@ -135,7 +138,8 @@ exports.updateProposalStatus = async (req, res) => {
       notificationTitle,
       notificationMessage,
       proposal._id,
-      'proposal'
+      'proposal',
+      io
     );
 
     res.json(populated);

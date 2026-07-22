@@ -8,6 +8,7 @@ require('dotenv').config();
 
 const Message = require('./models/Message');
 const Escrow = require('./models/Escrow');
+const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
 const server = http.createServer(app);
@@ -37,6 +38,9 @@ app.use('/api/notifications', require('./routes/notificationRoutes'));
 app.get('/', (req, res) => {
   res.send('SkillSphere Backend API running...');
 });
+
+// Global error handler (must be after all routes)
+app.use(errorHandler);
 
 io.use((socket, next) => {
   const token = socket.handshake.auth?.token;

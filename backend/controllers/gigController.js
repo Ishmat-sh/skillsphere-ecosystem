@@ -58,19 +58,12 @@ exports.getGigs = async (req, res) => {
       ];
     }
 
-    // Location-based search (if coordinates provided)
-    if (location && location.coordinates) {
-      const [lng, lat] = location.coordinates.split(',').map(coord => parseFloat(coord.trim()));
-      filter['client.location'] = {
-        $near: {
-          $geometry: {
-            type: 'Point',
-            coordinates: [lng, lat]
-          },
-          $maxDistance: location.maxDistance || 50000 // 50km default
-        }
-      };
-    }
+    // Note: Location-based search removed as it requires freelancer location data
+    // which is not directly accessible on the Gig document. 
+    // To implement geo-search properly, would need to:
+    // 1. Add location field to Gig schema
+    // 2. Or join with Freelancer collection via aggregation pipeline
+    // 3. Or use a separate location index service
 
     const sortOptions = {};
     if (sortBy === 'budget') sortOptions.budget = 1;
