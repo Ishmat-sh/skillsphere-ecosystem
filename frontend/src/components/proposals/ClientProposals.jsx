@@ -40,7 +40,7 @@ export default function ClientProposals({ refreshKey, onHired }) {
     try {
       await hire(checkoutProposal._id);
       setCheckoutProposal(null);
-    } catch (err) {
+    } catch {
       alert('Payment processing failed');
     } finally {
       setIsProcessingPayment(false);

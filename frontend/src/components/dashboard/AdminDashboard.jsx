@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../services/api';
-import { glassCard, btnPrimary, statusBadge } from '../../styles/dashboardStyles';
+import { glassCard, statusBadge } from '../../styles/dashboardStyles';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null);

@@ -22,7 +22,7 @@ export default function Login() {
       login(res.data.token, res.data.user);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Invalid credentials');
+      setError(err.response?.data?.message || 'Cannot reach the SkillSphere server. Start the backend and try again.');
     }
   };
 

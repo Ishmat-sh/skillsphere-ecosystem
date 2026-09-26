@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import api from '../../services/api';
 import { glassCard, statusBadge, btnPrimary, btnGhost, inputClass } from '../../styles/dashboardStyles';
 
@@ -9,22 +9,22 @@ export default function GigFeed({ onSelectGig, searchQuery = '', socketHook }) {
   const [msg, setMsg] = useState('');
   const [generatingAI, setGeneratingAI] = useState(false);
 
-  const load = () => {
+  const load = useCallback(() => {
     const params = searchQuery ? { search: searchQuery } : {};
     api.get('/api/gigs', { params }).then((res) => {
       setGigs(res.data.gigs || res.data || []);
     }).catch(() => {});
-  };
+  }, [searchQuery]);
 
-  useEffect(() => { load(); }, [searchQuery]);
+  useEffect(() => { load(); }, [load]);
 
   useEffect(() => {
     if (!socketHook) return;
-    const cleanup = socketHook.onGigNew?.((gig) => {
+    const cleanup = socketHook.onGigNew?.(() => {
       load();
     });
     return cleanup;
-  }, [socketHook]);
+  }, [socketHook, load]);
 
   const generateAICoverLetter = async (gigId) => {
     setGeneratingAI(true);
