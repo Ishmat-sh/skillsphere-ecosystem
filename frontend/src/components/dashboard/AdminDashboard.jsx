@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../services/api';
-import { glassCard, btnPrimary, btnGhost, statusBadge } from '../../styles/dashboardStyles';
+import { glassCard, btnPrimary, statusBadge } from '../../styles/dashboardStyles';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
@@ -138,7 +138,7 @@ export default function AdminDashboard() {
     <div className="space-y-6">
       {/* Stats Row */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className={`${glassCard} p-4 text-center`}>
+        <div className={`${glassCard} p-4 text-center border-red-500`}>
           <p className="text-[#A2A2D0]/60 text-xs uppercase tracking-wider">Total Revenue</p>
           <h4 className="text-2xl font-bold bg-gradient-to-r from-[#FF5E62] to-[#00D2FF] bg-clip-text text-transparent mt-1">
             ${totalRevenue.toLocaleString()}
@@ -176,7 +176,7 @@ export default function AdminDashboard() {
         </button>
         <button
           onClick={() => setActiveTab('payments')}
-          className={`pb-2.5 px-4 text-sm font-semibold tracking-wide border-b-2 transition-colors ${activeTab === 'payments' ? 'border-[#7B61FF] text-white' : 'border-transparent text-[#A2A2D0]/50 hover:text-white'}`}
+          className={`pb-2.5 px-4 text-sm font-semibold tracking-wide border-b[#7B61FF] text-white ${activeTab === 'payments' ? 'border-[#7B61FF] text-white' : 'border-transparent text-[#A2A2D0]/50 hover:text-white'}`}
         >
           Payment Vaults
         </button>

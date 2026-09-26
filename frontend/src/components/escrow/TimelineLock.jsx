@@ -2,16 +2,16 @@ import { useState } from 'react';
 import api from '../../services/api';
 
 export default function TimelineLock({ escrow, animate = false, onCompleteMilestone }) {
-  if (!escrow) return null;
-
-  const progress = Math.round((escrow.releasedAmount / escrow.totalAmount) * 100);
-
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [qrModal, setQrModal] = useState(null); // { milestoneIndex, milestoneTitle }
+
+  if (!escrow) return null;
+
+  const progress = Math.round((escrow.releasedAmount / escrow.totalAmount) * 100);
 
   const handleReviewSubmit = async (e) => {
     e.preventDefault();

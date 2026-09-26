@@ -10,22 +10,23 @@ export default function GoogleCallback() {
 
   useEffect(() => {
     const token = searchParams.get('token');
-    if (token) {
-      // Store token and user info
-      localStorage.setItem('token', token);
-      // Decode token to get user info
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-      }).join(''));
-      const user = JSON.parse(jsonPayload);
-      
-      login({ token, user });
-      navigate('/dashboard');
-    } else {
+    if (!token) {
       navigate('/login');
+      return;
     }
+
+    localStorage.setItem('token', token);
+
+    api
+      .get('/api/auth/me')
+      .then((res) => {
+        login(token, res.data);
+        navigate('/dashboard');
+      })
+      .catch(() => {
+        localStorage.removeItem('token');
+        navigate('/login');
+      });
   }, [searchParams, navigate, login]);
 
   return (

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../services/api';
-import { glassCard, btnPrimary, btnGhost } from '../../styles/dashboardStyles';
+import { glassCard, btnPrimary } from '../../styles/dashboardStyles';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const DEFAULT_SLOTS = ['09:00 - 12:00', '13:00 - 17:00', '18:00 - 21:00'];
@@ -51,7 +51,7 @@ export default function AvailabilityScheduler() {
       await api.patch('/api/freelancer/availability', { availability });
       setMsg('Availability saved successfully!');
       setTimeout(() => setMsg(''), 3000);
-    } catch (err) {
+    } catch {
       setError('Failed to save availability');
     }
   };

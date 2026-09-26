@@ -3,12 +3,14 @@ const http = require('http');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
+const passport = require('passport');
 const { Server } = require('socket.io');
 require('dotenv').config();
 
 const Message = require('./models/Message');
 const Escrow = require('./models/Escrow');
 const errorHandler = require('./middleware/errorHandler');
+require('./config/passport');
 
 const app = express();
 const server = http.createServer(app);
@@ -21,6 +23,7 @@ app.set('io', io);
 
 app.use(cors());
 app.use(express.json());
+app.use(passport.initialize());
 
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/gigs', require('./routes/gigRoutes'));

@@ -11,7 +11,6 @@ import TimelineLock from '../components/escrow/TimelineLock';
 import FreelancerAnalytics from '../components/analytics/FreelancerAnalytics';
 import ClientAnalytics from '../components/analytics/ClientAnalytics';
 import ChatPanel from '../components/chat/ChatPanel';
-import { btnPrimary } from '../styles/dashboardStyles';
 import AdminDashboard from '../components/dashboard/AdminDashboard';
 import AvailabilityScheduler from '../components/dashboard/AvailabilityScheduler';
 
